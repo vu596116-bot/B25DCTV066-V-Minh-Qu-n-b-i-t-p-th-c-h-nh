@@ -1,1 +1,4 @@
-
+npm create vite@latest library-react -- --template react
+cd library-react
+npm install
+npm run dev
