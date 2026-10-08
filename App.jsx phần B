@@ -1,1 +1,42 @@
+import { useState } from 'react'
+import { initialBooks } from './data.js' 
+import Header from './components/Header'
+import GenreFilter from './components/GenreFilter'
+import BookList from './components/BookList'
+import Section from './components/Section'
 
+function App() {
+  const [books, setBooks] = useState(initialBooks)
+  const [favorites, setFavorites] = useState([])
+  const [filter, setFilter] = useState('All')
+
+  const toggleFavorite = (id) => {
+    setFavorites(prev => 
+      prev.includes(id) ? prev.filter(fId => fId !== id) : [...prev, id]
+    )
+  }
+
+  const filteredBooks = books.filter(book => 
+    filter === 'All' || book.category === filter
+  )
+
+  return (
+    <div>
+      <Header favCount={favorites.length} />
+      
+      <Section title="Bộ lọc">
+          <GenreFilter currentFilter={filter} setFilter={setFilter} books={books} />
+      </Section>
+
+      <Section title="Danh sách sách">
+          <BookList 
+             books={filteredBooks} 
+             favorites={favorites} 
+             onToggleFav={toggleFavorite} 
+          />
+      </Section>
+    </div>
+  )
+}
+
+export default App
