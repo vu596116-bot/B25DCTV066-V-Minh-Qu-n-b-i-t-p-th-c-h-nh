@@ -1,1 +1,94 @@
+import { renderBooks, populateCategories } from './ui.js';
 
+let booksData = [];
+let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+const DOM = {
+    list: document.getElementById('book-list'),
+    status: document.getElementById('status-text'),
+    search: document.getElementById('search-input'),
+    filter: document.getElementById('filter-category'),
+    favCount: document.getElementById('fav-count'),
+    form: document.getElementById('add-book-form')
+};
+
+async function loadBooks() {
+    try {
+        const res = await fetch('./books.json'); 
+        if (!res.ok) throw new Error("Lỗi mạng");
+        booksData = await res.json();
+        DOM.status.textContent = `Đang hiển thị ${booksData.length} / ${booksData.length} cuốn`;
+        populateCategories(booksData, DOM.filter);
+        updateUI();
+    } catch (error) {
+        DOM.status.textContent = "Lỗi khi tải dữ liệu: " + error.message;
+    }
+}
+
+function updateUI() {
+    const searchTerm = DOM.search.value.toLowerCase();
+    const filterCat = DOM.filter.value;
+
+    const filtered = booksData.filter(book => {
+        const matchName = book.title.toLowerCase().includes(searchTerm);
+        const matchCat = filterCat === 'All' || book.category === filterCat;
+        return matchName && matchCat;
+    });
+
+    DOM.status.textContent = `Đang hiển thị ${filtered.length} / ${booksData.length} cuốn`;
+    DOM.favCount.textContent = favorites.length;
+    renderBooks(filtered, DOM.list, favorites);
+}
+
+DOM.search.addEventListener('input', updateUI);
+DOM.filter.addEventListener('change', updateUI);
+
+DOM.list.addEventListener('click', (e) => {
+    const card = e.target.closest('.book-card');
+    if (!card) return;
+    const id = card.dataset.id;
+
+    if (e.target.classList.contains('fav-btn')) {
+        if (favorites.includes(id)) {
+            favorites = favorites.filter(favId => favId !== id);
+        } else {
+            favorites.push(id);
+        }
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        updateUI();
+    }
+
+    if (e.target.classList.contains('del-btn')) {
+        if (confirm("Bạn có chắc chắn muốn xóa cuốn sách này?")) {
+            booksData = booksData.filter(b => String(b.id) !== id);
+            updateUI();
+        }
+    }
+});
+
+DOM.form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let isValid = true;
+    
+    const title = document.getElementById('title').value.trim();
+    const author = document.getElementById('author').value.trim();
+    const category = document.getElementById('category').value;
+    const year = parseInt(document.getElementById('year').value);
+    const currentYear = new Date().getFullYear();
+
+    document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+    if (title.length < 3) { document.getElementById('title-error').textContent = 'Tên phải từ 3 ký tự'; isValid = false; }
+    if (!author) { document.getElementById('author-error').textContent = 'Tác giả bắt buộc'; isValid = false; }
+    if (!category) { document.getElementById('category-error').textContent = 'Phải chọn thể loại'; isValid = false; }
+    if (isNaN(year) || year < 1900 || year > currentYear) { document.getElementById('year-error').textContent = `Năm từ 1900 đến ${currentYear}`; isValid = false; }
+
+    if (isValid) {
+        const newBook = { id: Date.now().toString(), title, author, category, year };
+        booksData.unshift(newBook); 
+        updateUI();
+        DOM.form.reset();
+    }
+});
+
+loadBooks();
