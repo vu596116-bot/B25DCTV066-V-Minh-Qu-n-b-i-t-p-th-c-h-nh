@@ -1,1 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Thư viện</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Thư Viện Của Tôi</h1>
+        <div class="fav-count">Số sách yêu thích: <span id="fav-count">0</span></div>
+    </header>
 
+    <main>
+        <section class="form-section">
+            <h2>Thêm sách mới</h2>
+            <form id="add-book-form">
+                <div class="input-group">
+                    <input type="text" id="title" placeholder="Tên sách">
+                    <span class="error" id="title-error"></span>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="author" placeholder="Tác giả">
+                    <span class="error" id="author-error"></span>
+                </div>
+                <div class="input-group">
+                    <select id="category">
+                        <option value="">Chọn thể loại</option>
+                        <option value="Lập trình">Lập trình</option>
+                        <option value="Kỹ năng sống">Kỹ năng sống</option>
+                        <option value="Khoa học">Khoa học</option>
+                    </select>
+                    <span class="error" id="category-error"></span>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="year" placeholder="Năm xuất bản">
+                    <span class="error" id="year-error"></span>
+                </div>
+                <button type="submit">Thêm sách</button>
+            </form>
+        </section>
+
+
+        <section class="toolbar">
+            <input type="text" id="search-input" placeholder="Tìm kiếm theo tên...">
+            <select id="filter-category">
+                <option value="All">Tất cả thể loại</option>
+            </select>
+        </section>
+
+        <div class="status" id="status-text">Đang tải...</div>
+
+        <section class="book-list" id="book-list">
+    
+        </section>
+    </main>
+    
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>
