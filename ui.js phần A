@@ -1,1 +1,35 @@
+export function renderBooks(books, container, favorites) {
+    container.innerHTML = ''; // Clear cũ
+    books.forEach(book => {
+        const article = document.createElement('article');
+        article.className = 'book-card';
+        article.dataset.id = book.id; 
 
+        const title = document.createElement('h3');
+        title.textContent = book.title;
+
+        const info = document.createElement('p');
+        info.textContent = `${book.author} - ${book.category} (${book.year})`;
+
+        const favBtn = document.createElement('button');
+        favBtn.className = 'fav-btn';
+        favBtn.textContent = favorites.includes(String(book.id)) ? 'Bỏ Yêu thích' : 'Yêu thích';
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-btn';
+        delBtn.textContent = 'Xóa';
+
+        article.append(title, info, favBtn, delBtn);
+        container.appendChild(article);
+    });
+}
+
+export function populateCategories(books, selectElement) {
+    const categories = new Set(books.map(b => b.category));
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        selectElement.appendChild(option);
+    });
+}
